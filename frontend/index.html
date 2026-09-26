@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Decode2Solve - Understand coding problems in English, Tamil, or Tanglish before you solve them.">
+  <title>Decode2Solve | Understand the problem before you solve it</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header" role="banner">
+      <div class="header-content">
+        <div class="brand-group">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+              <line x1="12" y1="2" x2="12" y2="22" stroke-dasharray="2 2"></line>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">Decode2Solve</h1>
+            <p class="brand-tagline">Understand the problem before you solve it.</p>
+          </div>
+        </div>
+        <div class="header-badge" id="serviceStatusBadge" aria-label="Backend status">
+          <span class="status-dot"></span>
+          <span class="status-text">MVP Mode</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-workspace" id="mainContent">
+      <div class="workspace-grid">
+        
+        <!-- Left Panel: Problem Input & Controls -->
+        <section class="panel input-panel" aria-labelledby="inputSectionHeading">
+          <div class="panel-header">
+            <h2 id="inputSectionHeading" class="panel-title">
+              <svg class="panel-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Paste your coding problem
+            </h2>
+            <button type="button" class="btn-ghost-sm" id="clearInputBtn" aria-label="Clear problem input" title="Clear input">
+              Clear
+            </button>
+          </div>
+
+          <form id="problemForm" class="problem-form" novalidate>
+            <!-- Problem Textarea -->
+            <div class="form-group">
+              <label for="problemInput" class="visually-hidden">Coding problem statement</label>
+              <div class="textarea-wrapper">
+                <textarea 
+                  id="problemInput" 
+                  name="problem" 
+                  class="problem-textarea" 
+                  rows="12" 
+                  placeholder="Paste your HackerRank problem statement here..."
+                  aria-describedby="inputHint errorAlert"
+                  required
+                ></textarea>
+              </div>
+              <div class="textarea-footer">
+                <span class="input-hint" id="inputHint">Supports text from HackerRank, LeetCode, or custom problems</span>
+                <span class="char-count" id="charCount" aria-live="polite">0 chars</span>
+              </div>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="form-group language-group">
+              <fieldset class="language-fieldset">
+                <legend class="language-heading">Explain in</legend>
+                <div class="segmented-control" role="radiogroup" aria-label="Explanation language selection">
+                  
+                  <label class="segment-option" for="langEnglish">
+                    <input 
+                      type="radio" 
+                      id="langEnglish" 
+                      name="language" 
+                      value="english" 
+                      checked 
+                    >
+                    <span class="segment-label">
+                      <span class="lang-primary">English</span>
+                    </span>
+                  </label>
+
+                  <label class="segment-option" for="langTamil">
+                    <input 
+                      type="radio" 
+                      id="langTamil" 
+                      name="language" 
+                      value="tamil"
+                    >
+                    <span class="segment-label">
+                      <span class="lang-primary">Tamil</span>
+                      <span class="lang-native">(தமிழ்)</span>
+                    </span>
+                  </label>
+
+                  <label class="segment-option" for="langTanglish">
+                    <input 
+                      type="radio" 
+                      id="langTanglish" 
+                      name="language" 
+                      value="tanglish"
+                    >
+                    <span class="segment-label">
+                      <span class="lang-primary">Tanglish</span>
+                    </span>
+                  </label>
+
+                </div>
+              </fieldset>
+            </div>
+
+            <!-- Validation / Error Alert (Inline) -->
+            <div id="errorAlert" class="alert-box alert-error hidden" role="alert" aria-live="assertive">
+              <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <div class="alert-message" id="errorMessage">Please paste a problem statement first.</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+              <button 
+                type="submit" 
+                id="explainBtn" 
+                class="btn-primary"
+                aria-label="Explain Problem"
+              >
+                <span class="btn-text" id="btnText">Explain Problem</span>
+                <span class="btn-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </span>
+                <span class="btn-spinner hidden" id="btnSpinner" aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Right Panel: Explanation Output -->
+        <section class="panel explanation-panel" aria-labelledby="outputSectionHeading" aria-live="polite">
+          
+          <!-- State 1: Initial Empty State -->
+          <div id="emptyState" class="state-container empty-state">
+            <div class="empty-state-icon" aria-hidden="true">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <h2 id="outputSectionHeading" class="empty-state-title">Your explanation will appear here</h2>
+            <p class="empty-state-subtitle">Paste a problem on the left and choose your language to get started.</p>
+            <div class="empty-state-features">
+              <div class="feature-tag">Problem Breakdown</div>
+              <div class="feature-tag">Input / Output Specs</div>
+              <div class="feature-tag">Sample Walkthrough</div>
+              <div class="feature-tag">Pre-code Checklist</div>
+            </div>
+          </div>
+
+          <!-- State 2: Loading State -->
+          <div id="loadingState" class="state-container loading-state hidden" aria-hidden="true">
+            <div class="loading-spinner-large" aria-hidden="true"></div>
+            <h2 class="loading-title">Understanding your problem...</h2>
+            <p class="loading-subtitle">Breaking down requirements, inputs, outputs, and edge cases</p>
+            <div class="loading-skeleton">
+              <div class="skeleton-line full"></div>
+              <div class="skeleton-line medium"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+
+          <!-- State 3: Populated Explanation Content -->
+          <div id="explanationContent" class="explanation-content hidden">
+            
+            <!-- Result Top Bar -->
+            <div class="result-header">
+              <div class="result-title-group">
+                <span class="badge-success">Explanation Ready</span>
+                <span class="badge-language" id="resultLanguageBadge">English</span>
+              </div>
+              <button 
+                type="button" 
+                id="resetBtn" 
+                class="btn-secondary" 
+                aria-label="Explain another problem"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <polyline points="23 20 23 14 17 14"></polyline>
+                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                </svg>
+                Explain Another Problem
+              </button>
+            </div>
+
+            <!-- Explanation Sections -->
+            <div class="explanation-sections">
+              
+              <!-- 1. What is this problem asking? -->
+              <article class="explanation-card" id="cardWhatAsking">
+                <header class="card-header">
+                  <div class="card-header-icon ask-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                  <h3 class="card-title">What is this problem asking?</h3>
+                </header>
+                <div class="card-body">
+                  <p id="whatAskingText" class="card-text text-content"></p>
+                </div>
+              </article>
+
+              <!-- Two Column Grid for Input & Output -->
+              <div class="cards-duo-grid">
+                
+                <!-- 2. What is the input? -->
+                <article class="explanation-card" id="cardInput">
+                  <header class="card-header">
+                    <div class="card-header-icon input-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                      </svg>
+                    </div>
+                    <h3 class="card-title">What is the input?</h3>
+                  </header>
+                  <div class="card-body">
+                    <div id="inputText" class="card-text text-content"></div>
+                  </div>
+                </article>
+
+                <!-- 3. What is the output? -->
+                <article class="explanation-card" id="cardOutput">
+                  <header class="card-header">
+                    <div class="card-header-icon output-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                    <h3 class="card-title">What is the output?</h3>
+                  </header>
+                  <div class="card-body">
+                    <div id="outputText" class="card-text text-content"></div>
+                  </div>
+                </article>
+
+              </div>
+
+              <!-- Two Column Grid for Samples -->
+              <div class="cards-duo-grid">
+
+                <!-- 4. Sample Input Explained -->
+                <article class="explanation-card" id="cardSampleInput">
+                  <header class="card-header">
+                    <div class="card-header-icon sample-in-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                        <path d="M7 15h0"></path>
+                        <path d="M2 9.5h20"></path>
+                      </svg>
+                    </div>
+                    <h3 class="card-title">Sample Input Explained</h3>
+                  </header>
+                  <div class="card-body">
+                    <div id="sampleInputText" class="card-text text-content"></div>
+                  </div>
+                </article>
+
+                <!-- 5. Sample Output Explained -->
+                <article class="explanation-card" id="cardSampleOutput">
+                  <header class="card-header">
+                    <div class="card-header-icon sample-out-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <polyline points="9 15 12 12 15 15"></polyline>
+                      </svg>
+                    </div>
+                    <h3 class="card-title">Sample Output Explained</h3>
+                  </header>
+                  <div class="card-body">
+                    <div id="sampleOutputText" class="card-text text-content"></div>
+                  </div>
+                </article>
+
+              </div>
+
+              <!-- 6. Important Things to Notice -->
+              <article class="explanation-card" id="cardImportantPoints">
+                <header class="card-header">
+                  <div class="card-header-icon notice-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </div>
+                  <h3 class="card-title">Important Things to Notice</h3>
+                </header>
+                <div class="card-body">
+                  <ul id="importantPointsList" class="clean-bullet-list"></ul>
+                </div>
+              </article>
+
+              <!-- 7. Before You Code -->
+              <article class="explanation-card" id="cardBeforeYouCode">
+                <header class="card-header">
+                  <div class="card-header-icon checklist-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                  <h3 class="card-title">Before You Code</h3>
+                </header>
+                <div class="card-body">
+                  <ul id="beforeYouCodeList" class="clean-checklist"></ul>
+                </div>
+              </article>
+
+            </div>
+
+            <!-- Bottom Reset Action for convenience -->
+            <div class="result-footer">
+              <button 
+                type="button" 
+                id="footerResetBtn" 
+                class="btn-secondary" 
+                aria-label="Explain another problem"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <polyline points="23 20 23 14 17 14"></polyline>
+                  <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                </svg>
+                Explain Another Problem
+              </button>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <span>Decode2Solve — Understand the problem before you solve it.</span>
+        <span class="footer-divider">•</span>
+        <span class="footer-info">Problem Explanation Feature MVP</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
